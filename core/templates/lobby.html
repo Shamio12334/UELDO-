@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Lobby | {{ event.title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom scrollbar for the player list */
+        .custom-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #1f2937; 
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #4b5563; 
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #6b7280; 
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-sans min-h-screen p-4">
+
+    <div class="max-w-6xl mx-auto mb-8 flex flex-col md:flex-row justify-between items-center border-b border-gray-700 pb-6">
+        <div class="mb-4 md:mb-0 text-center md:text-left">
+            <h1 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500 uppercase tracking-wide">{{ event.title }}</h1>
+            <div class="flex items-center justify-center md:justify-start space-x-2 mt-2">
+                <span class="relative flex h-3 w-3">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                </span>
+                <p class="text-red-400 font-bold tracking-widest text-sm">LIVE TOURNAMENT FEED</p>
+            </div>
+        </div>
+        <a href="{% url 'dashboard' %}" class="bg-gray-800 border border-gray-600 px-6 py-3 rounded-lg text-sm font-bold hover:bg-gray-700 transition hover:text-white text-gray-300">
+            Exit Lobby
+        </a>
+    </div>
+
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="lg:col-span-1 bg-gray-800 rounded-2xl p-6 h-fit border border-gray-700 shadow-xl">
+            <h3 class="text-xl font-bold mb-4 flex items-center text-gray-200">
+                <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                Registered Players
+            </h3>
+            <div class="space-y-3 max-h-[500px] overflow-y-auto custom-scroll pr-2">
+                {% for player in players %}
+                <div class="flex items-center space-x-3 bg-gray-900 p-3 rounded-xl border border-gray-800">
+                    <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center font-bold text-sm shadow-lg">
+                        {{ player.player_name|slice:":1" }}
+                    </div>
+                    <div>
+                        <span class="font-bold block text-gray-200">{{ player.player_name }}</span>
+                        <span class="text-xs text-gray-500">ID: {{ player.pass_id }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-8 text-gray-500">
+                    <p>No players registered yet.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="lg:col-span-2 space-y-6">
+            <h3 class="text-xl font-bold flex items-center text-gray-200">
+                <svg class="w-5 h-5 mr-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                Live Matchups
+            </h3>
+            
+            <div class="space-y-4">
+                {% for match in matches %}
+                <div class="bg-gray-800 rounded-2xl overflow-hidden border border-gray-700 shadow-xl">
+                    <div class="bg-gray-900/50 p-3 border-b border-gray-700 flex justify-between items-center">
+                        <span class="text-xs font-bold uppercase tracking-widest text-yellow-500">{{ match.round_name }}</span>
+                        {% if match.winner %}
+                            <span class="bg-green-900 text-green-300 text-[10px] px-2 py-0.5 rounded font-bold uppercase">Finished</span>
+                        {% else %}
+                            <span class="bg-red-900 text-red-300 text-[10px] px-2 py-0.5 rounded font-bold uppercase animate-pulse">Live Now</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="p-6 flex flex-col md:flex-row justify-between items-center relative">
+                        <div class="flex-1 text-center md:text-left mb-4 md:mb-0 z-10">
+                            <h4 class="text-xl font-bold {% if match.winner == match.player_1 %}text-green-400{% elif match.winner %}text-gray-500{% else %}text-white{% endif %}">
+                                {{ match.player_1.player_name }}
+                                {% if match.winner == match.player_1 %}👑{% endif %}
+                            </h4>
+                        </div>
+
+                        <div class="z-10 bg-gray-900 rounded-full h-12 w-12 flex items-center justify-center border-2 border-gray-700 text-gray-500 font-black italic shadow-lg mx-8">
+                            VS
+                        </div>
+
+                        <div class="flex-1 text-center md:text-right mt-4 md:mt-0 z-10">
+                            <h4 class="text-xl font-bold {% if match.winner == match.player_2 %}text-green-400{% elif match.winner %}text-gray-500{% else %}text-white{% endif %}">
+                                {% if match.winner == match.player_2 %}👑{% endif %}
+                                {{ match.player_2.player_name }}
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="bg-gray-800 rounded-2xl p-10 text-center border border-gray-700 border-dashed">
+                    <p class="text-gray-400 text-lg">The bracket is being generated.</p>
+                    <p class="text-sm text-gray-500 mt-2">Wait for the admin to announce the first match.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

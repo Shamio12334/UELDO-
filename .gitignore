@@ -1,0 +1,17 @@
+# Django specific
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+media
+
+# Virtual Environment (CRITICAL: Do not upload this!)
+venv/
+env/
+.env
+
+# Editor directories
+.vscode/
+.idea/
