@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User  # 👈 Added this import
 import uuid
 
 # 1. CATEGORIES
@@ -13,7 +14,7 @@ class SubCategory(models.Model):
     name = models.CharField(max_length=50)
     def __str__(self): return f"{self.parent_category.name} - {self.name}"
 
-# 3. EVENTS (Updated with QR Code)
+# 3. EVENTS
 class Event(models.Model):
     title = models.CharField(max_length=100)
     sub_category = models.ForeignKey(SubCategory, related_name='events', on_delete=models.CASCADE)
@@ -22,8 +23,6 @@ class Event(models.Model):
     winning_prize = models.CharField(max_length=100, default="TBA")
     team_size = models.CharField(max_length=20, default="5v5")
     description = models.TextField(blank=True, default="No description added.")
-    
-    # 👇 NEW FIELD FOR ADMIN UPLOAD
     qr_code = models.ImageField(upload_to='qr_codes/', blank=True, null=True)
     
     STATUS_CHOICES = [('LIVE', 'Live'), ('OPEN', 'Open'), ('FAST', 'Filling Fast'), ('CLOSED', 'Closed')]
@@ -32,6 +31,7 @@ class Event(models.Model):
 
 # 4. REGISTRATIONS
 class Registration(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True) # 👈 NEW FIELD
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     player_name = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=15)
