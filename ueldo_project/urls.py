@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 from core.views import dashboard, event_detail, register_event, view_pass, lobby, payment_page
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('control-panel-92X/', admin.site.urls),
     
     # Google Login
     path('accounts/', include('allauth.urls')),
