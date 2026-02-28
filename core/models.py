@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User  # 👈 Added this import
+from django.contrib.auth.models import User
 import uuid
 
 # 1. CATEGORIES
@@ -18,6 +18,7 @@ class SubCategory(models.Model):
 class Event(models.Model):
     title = models.CharField(max_length=100)
     sub_category = models.ForeignKey(SubCategory, related_name='events', on_delete=models.CASCADE)
+    event_date = models.DateTimeField(null=True, blank=True) # 👈 Added for you
     venue = models.CharField(max_length=100)
     entry_fee = models.IntegerField()
     winning_prize = models.CharField(max_length=100, default="TBA")
@@ -31,7 +32,7 @@ class Event(models.Model):
 
 # 4. REGISTRATIONS
 class Registration(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True) # 👈 NEW FIELD
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     player_name = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=15)

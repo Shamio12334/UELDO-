@@ -1,10 +1,13 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Category, Event, Registration, Match
+# Added SubCategory here just in case you need it later
+from .models import Category, Event, Registration, Match, SubCategory
 
-# 1. Dashboard (UPDATED to check participation)
+# 1. Dashboard (UPDATED to sort by event date)
 def dashboard(request):
-    categories = Category.objects.prefetch_related('subcategories__events').all()
+    # .order_by('id') ensures categories stay in order, 
+    # and prefetch handles the events within them.
+    categories = Category.objects.prefetch_related('subcategories__events').all().order_by('id')
     
     # Get a list of Event IDs the user has already joined
     my_event_ids = []
@@ -13,7 +16,7 @@ def dashboard(request):
 
     return render(request, 'index.html', {
         'categories': categories,
-        'my_event_ids': my_event_ids  # 👈 Sending this list to the HTML
+        'my_event_ids': my_event_ids
     })
 
 # 2. Event Details
@@ -24,7 +27,7 @@ def event_detail(request, event_id):
     already_registered = Registration.objects.filter(user=request.user, event=event).exists()
     return render(request, 'event_detail.html', {'event': event, 'already_registered': already_registered})
 
-# 3. Registration Logic (UPDATED to save User)
+# 3. Registration Logic
 @login_required
 def register_event(request, event_id):
     if request.method == "POST":
@@ -35,7 +38,7 @@ def register_event(request, event_id):
         p_mode = request.POST.get('payment_mode')
         
         reg = Registration.objects.create(
-            user=request.user,  # 👈 SAVING THE LOGGED-IN USER HERE
+            user=request.user,
             event=event,
             player_name=p_name,
             phone_number=p_phone,

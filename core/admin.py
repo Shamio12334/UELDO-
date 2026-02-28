@@ -3,15 +3,18 @@ from django.utils.html import format_html
 from .models import Category, SubCategory, Event, Registration, Match
 
 class EventAdmin(admin.ModelAdmin):
-    list_display = ('title', 'sub_category', 'entry_fee', 'winning_prize', 'status')
+    # Added 'event_date' to the display and filter
+    list_display = ('title', 'sub_category', 'event_date', 'entry_fee', 'winning_prize', 'status')
+    list_filter = ('status', 'sub_category', 'event_date')
+    search_fields = ('title', 'venue')
+    ordering = ('event_date',) # Shows soonest events at the top by default
 
 class RegistrationAdmin(admin.ModelAdmin):
-    # 👇 ADDED 'whatsapp_button' TO THIS LIST 👇
     list_display = ('player_name', 'event', 'phone_number', 'payment_mode', 'is_paid', 'whatsapp_button')
     list_filter = ('event', 'payment_mode', 'is_paid')
     search_fields = ('player_name', 'pass_id', 'phone_number')
 
-    # 👇 WHATSAPP LOGIC 👇
+    # WHATSAPP LOGIC
     def whatsapp_button(self, obj):
         return format_html(
             '<a style="background-color:#25D366; color:white; padding:5px 10px; border-radius:5px; text-decoration:none; font-weight:bold;" '
